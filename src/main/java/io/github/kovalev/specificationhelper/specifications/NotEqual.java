@@ -10,40 +10,35 @@ import jakarta.persistence.criteria.Predicate;
 import org.springframework.lang.NonNull;
 
 /**
- * Спецификация для проверки несоответствия значений полей.
+ * Спецификация для проверки (не)равенства значений полей.
  *
  * <p>Наследует все особенности сравнения из {@link BaseComparisonSpecification},
  * включая ограничения точности для временных типов.</p>
  *
  * <p><b>Особенности реализации:</b></p>
  * <ul>
- *   <li>Генерирует SQL-условие с оператором {@code <>}</li>
- *   <li>Поддерживает регистронезависимое сравнение строк (при {@code ignoreCase = true})</li>
- *   <li>Обработка NULL значений согласно политике {@link NullHandling}:
- *     <ul>
- *       <li>{@code IGNORE} - исключает NULL-значения из условия</li>
- *       <li>{@code ADD_AS_NULL} - добавляет условие {@code IS NOT NULL}</li>
- *     </ul>
- *   </li>
+ *     <li>Генерирует SQL-условие с оператором {@code <>}.</li>
+ *     <li>Поддерживает регистронезависимое сравнение строк (при {@code ignoreCase = true}).</li>
+ *     <li>Обработка {@code null}-значений согласно {@link NullHandling}.</li>
  * </ul>
  *
- * @param <E> Тип сущности
+ * @param <E> тип сущности
  */
 public class NotEqual<E> extends BaseComparisonSpecification<E> {
 
-    public NotEqual(Object value, String... fields) {
+    public NotEqual(Object value, @NonNull String... fields) {
         super(value, NullHandling.IGNORE, DEFAULT_IGNORE_CASE, fields);
     }
 
-    public NotEqual(Object value, boolean ignoreCase, String... fields) {
+    public NotEqual(Object value, boolean ignoreCase, @NonNull String... fields) {
         super(value, NullHandling.IGNORE, ignoreCase, fields);
     }
 
-    public NotEqual(Object value, @NonNull NullHandling nullHandling, String... fields) {
+    public NotEqual(Object value, @NonNull NullHandling nullHandling, @NonNull String... fields) {
         super(value, nullHandling, DEFAULT_IGNORE_CASE, fields);
     }
 
-    public NotEqual(Object value, @NonNull NullHandling nullHandling, boolean ignoreCase, String... fields) {
+    public NotEqual(Object value, @NonNull NullHandling nullHandling, boolean ignoreCase, @NonNull String... fields) {
         super(value, nullHandling, ignoreCase, fields);
     }
 
