@@ -51,7 +51,7 @@ class InTest extends DatabaseTest {
                         .toList());
 
         In<User, UUID> emptySpec1 = new In<>(null, User_.ID);
-        In<User, UUID> emptySpec2 = new In<>(List.of(UUID.randomUUID()));
+        In<User, UUID> emptySpec2 = new In<>(List.of(), User_.ID);
 
         assertThat(userRepository.findAll(emptySpec1)).hasSize(userUuids.size());
         assertThat(userRepository.findAll(emptySpec2)).hasSize(userUuids.size());
