@@ -58,8 +58,8 @@ public abstract class BaseComparisonSpecification<E> implements CustomSpecificat
      * @param ignoreCase   если {@code true}, игнорируется регистр для строк
      * @param fields       имена полей сущности, к которым применяется сравнение; не может быть {@code null}
      */
-    protected BaseComparisonSpecification(Object value, @NonNull NullHandling nullHandling,
-                                          boolean ignoreCase, @NonNull String... fields) {
+    protected BaseComparisonSpecification(@NonNull String fields, Object value,
+                                          @NonNull NullHandling nullHandling, boolean ignoreCase) {
         this.value = value;
         this.nullHandling = Objects.requireNonNull(nullHandling);
         this.ignoreCase = ignoreCase;

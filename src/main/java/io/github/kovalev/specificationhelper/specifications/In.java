@@ -32,7 +32,7 @@ public class In<E, I> implements CustomSpecification<E> {
      * @param values  коллекция значений для поиска; может быть {@code null} или пустой
      * @param fields  имена полей сущности, по которым выполняется поиск; не может быть {@code null}
      */
-    public In(Collection<I> values, @NonNull String... fields) {
+    public In(@NonNull String fields, Collection<I> values) {
         this.values = values;
         this.fields = new FieldsParser().parse(fields);
     }

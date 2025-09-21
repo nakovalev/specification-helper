@@ -23,7 +23,7 @@ class InTest extends DatabaseTest {
                         .toList()
                         .subList(0, 3));
 
-        In<User, UUID> uuidSpec = new In<>(userUuids, User_.ID);
+        In<User, UUID> uuidSpec = new In<>(User_.ID, userUuids);
         List<User> result = userRepository.findAll(uuidSpec);
 
         assertThat(result).hasSize(3);
@@ -36,7 +36,7 @@ class InTest extends DatabaseTest {
 
         List<UUID> uuids = IntStream.range(0, 5).mapToObj(i -> UUID.randomUUID()).toList();
 
-        In<User, UUID> uuidSpec = new In<>(uuids, User_.ID);
+        In<User, UUID> uuidSpec = new In<>(User_.ID, uuids);
         List<User> result = userRepository.findAll(uuidSpec);
 
         assertThat(result).isEmpty();
@@ -50,8 +50,8 @@ class InTest extends DatabaseTest {
                         .map(User::getId)
                         .toList());
 
-        In<User, UUID> emptySpec1 = new In<>(null, User_.ID);
-        In<User, UUID> emptySpec2 = new In<>(List.of(), User_.ID);
+        In<User, UUID> emptySpec1 = new In<>(User_.ID, null);
+        In<User, UUID> emptySpec2 = new In<>(User_.ID, List.of());
 
         assertThat(userRepository.findAll(emptySpec1)).hasSize(userUuids.size());
         assertThat(userRepository.findAll(emptySpec2)).hasSize(userUuids.size());

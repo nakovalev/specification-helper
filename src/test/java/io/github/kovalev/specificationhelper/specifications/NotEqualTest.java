@@ -20,11 +20,11 @@ class NotEqualTest extends DatabaseTest {
         User user = userGenerator.one();
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
 
-        assertThat(userRepository.findOne(new NotEqual<>("nonexistent", User_.USERNAME))).isPresent();
-        assertThat(userRepository.findOne(new NotEqual<>(UUID.randomUUID(), User_.ID))).isPresent();
-        assertThat(userRepository.findOne(new NotEqual<>(user.getEmail() + "x", User_.EMAIL))).isPresent();
+        assertThat(userRepository.findOne(new NotEqual<>(User_.USERNAME, "nonexistent"))).isPresent();
+        assertThat(userRepository.findOne(new NotEqual<>(User_.ID, UUID.randomUUID()))).isPresent();
+        assertThat(userRepository.findOne(new NotEqual<>(User_.EMAIL, user.getEmail() + "x"))).isPresent();
 
-        assertThat(userRepository.findOne(new NotEqual<>(user.getUsername(), User_.USERNAME))).isEmpty();
+        assertThat(userRepository.findOne(new NotEqual<>(User_.USERNAME, user.getUsername()))).isEmpty();
     }
 
     @Test
@@ -33,9 +33,9 @@ class NotEqualTest extends DatabaseTest {
         user.setUsername("TestUser");
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
 
-        assertThat(userRepository.findOne(new NotEqual<>("testuser", User_.USERNAME))).isPresent();
-        assertThat(userRepository.findOne(new NotEqual<>("TESTUSER", User_.USERNAME))).isPresent();
-        assertThat(userRepository.findOne(new NotEqual<>("TestUser", User_.USERNAME))).isEmpty();
+        assertThat(userRepository.findOne(new NotEqual<>(User_.USERNAME, "testuser"))).isPresent();
+        assertThat(userRepository.findOne(new NotEqual<>(User_.USERNAME, "TESTUSER"))).isPresent();
+        assertThat(userRepository.findOne(new NotEqual<>(User_.USERNAME, "TestUser"))).isEmpty();
     }
 
     @Test
@@ -44,17 +44,17 @@ class NotEqualTest extends DatabaseTest {
         user.setUsername("TestUser");
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
 
-        assertThat(userRepository.findOne(new NotEqual<>("testuser", true, User_.USERNAME))).isEmpty();
-        assertThat(userRepository.findOne(new NotEqual<>("TESTUSER", true, User_.USERNAME))).isEmpty();
-        assertThat(userRepository.findOne(new NotEqual<>("TestUser", true, User_.USERNAME))).isEmpty();
-        assertThat(userRepository.findOne(new NotEqual<>("different", true, User_.USERNAME))).isPresent();
+        assertThat(userRepository.findOne(new NotEqual<>(User_.USERNAME, "testuser", true))).isEmpty();
+        assertThat(userRepository.findOne(new NotEqual<>(User_.USERNAME, "TESTUSER", true))).isEmpty();
+        assertThat(userRepository.findOne(new NotEqual<>(User_.USERNAME, "TestUser", true))).isEmpty();
+        assertThat(userRepository.findOne(new NotEqual<>(User_.USERNAME, "different", true))).isPresent();
     }
 
     @Test
     void ignoreNullValue() {
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(userGenerator.one()));
 
-        assertThat(userRepository.findOne(new NotEqual<>(null, User_.ID))).isPresent();
+        assertThat(userRepository.findOne(new NotEqual<>(User_.ID, null))).isPresent();
     }
 
     @Test
@@ -70,7 +70,7 @@ class NotEqualTest extends DatabaseTest {
             entityManager.persist(userWithEmail);
         });
 
-        val emailIsNotNull = new NotEqual<User>(null, NullHandling.USE_IS_NULL, User_.EMAIL);
+        val emailIsNotNull = new NotEqual<User>(User_.EMAIL, null, NullHandling.USE_IS_NULL);
         assertThat(userRepository.findAll(emailIsNotNull))
                 .hasSize(1)
                 .allMatch(u -> u.getEmail() != null);
@@ -85,8 +85,8 @@ class NotEqualTest extends DatabaseTest {
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
 
 
-        assertThat(userRepository.findOne(new NotEqual<>(createdAt.plusSeconds(1), User_.CREATED_AT))).isPresent();
-        assertThat(userRepository.findOne(new NotEqual<>(createdAt, User_.CREATED_AT))).isEmpty();
+        assertThat(userRepository.findOne(new NotEqual<>(User_.CREATED_AT, createdAt.plusSeconds(1)))).isPresent();
+        assertThat(userRepository.findOne(new NotEqual<>(User_.CREATED_AT, createdAt))).isEmpty();
     }
 
     @Test
@@ -95,9 +95,9 @@ class NotEqualTest extends DatabaseTest {
         user.setUsername("TestUser");
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
 
-        assertThat(userRepository.findOne(new NotEqual<>("testuser", User_.USERNAME))).isPresent();
-        assertThat(userRepository.findOne(new NotEqual<>("testuser", true, User_.USERNAME))).isEmpty();
-        assertThat(userRepository.findOne(new NotEqual<>("testuser", NullHandling.IGNORE, User_.USERNAME))).isPresent();
-        assertThat(userRepository.findOne(new NotEqual<>("testuser", NullHandling.USE_IS_NULL, true, User_.USERNAME))).isEmpty();
+        assertThat(userRepository.findOne(new NotEqual<>(User_.USERNAME, "testuser"))).isPresent();
+        assertThat(userRepository.findOne(new NotEqual<>(User_.USERNAME, "testuser", true))).isEmpty();
+        assertThat(userRepository.findOne(new NotEqual<>(User_.USERNAME, "testuser", NullHandling.IGNORE))).isPresent();
+        assertThat(userRepository.findOne(new NotEqual<>(User_.USERNAME, "testuser", NullHandling.USE_IS_NULL, true))).isEmpty();
     }
 }

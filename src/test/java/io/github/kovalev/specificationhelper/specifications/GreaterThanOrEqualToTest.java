@@ -21,9 +21,9 @@ class GreaterThanOrEqualToTest extends DatabaseTest {
         entity.setIntValue(10);
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(entity));
 
-        assertFound(new GreaterThanOrEqualTo<>(9, ComparableEntity_.INT_VALUE));
-        assertFound(new GreaterThanOrEqualTo<>(10, ComparableEntity_.INT_VALUE));
-        assertNotFound(new GreaterThanOrEqualTo<>(11, ComparableEntity_.INT_VALUE));
+        assertFound(new GreaterThanOrEqualTo<>(ComparableEntity_.INT_VALUE, 9));
+        assertFound(new GreaterThanOrEqualTo<>(ComparableEntity_.INT_VALUE,10));
+        assertNotFound(new GreaterThanOrEqualTo<>(ComparableEntity_.INT_VALUE, 11));
     }
 
     @Test
@@ -32,9 +32,9 @@ class GreaterThanOrEqualToTest extends DatabaseTest {
         entity.setBigDecimalValue(new BigDecimal("15.7500"));
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(entity));
 
-        assertFound(new GreaterThanOrEqualTo<>(new BigDecimal("15.7499"), ComparableEntity_.BIG_DECIMAL_VALUE));
-        assertFound(new GreaterThanOrEqualTo<>(new BigDecimal("15.75"), ComparableEntity_.BIG_DECIMAL_VALUE));
-        assertNotFound(new GreaterThanOrEqualTo<>(new BigDecimal("15.7501"), ComparableEntity_.BIG_DECIMAL_VALUE));
+        assertFound(new GreaterThanOrEqualTo<>(ComparableEntity_.BIG_DECIMAL_VALUE ,new BigDecimal("15.7499")));
+        assertFound(new GreaterThanOrEqualTo<>(ComparableEntity_.BIG_DECIMAL_VALUE, new BigDecimal("15.75")));
+        assertNotFound(new GreaterThanOrEqualTo<>(ComparableEntity_.BIG_DECIMAL_VALUE, new BigDecimal("15.7501")));
     }
 
     @Test
@@ -43,9 +43,9 @@ class GreaterThanOrEqualToTest extends DatabaseTest {
         entity.setStringValue("Hello");
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(entity));
 
-        assertFound(new GreaterThanOrEqualTo<>("Hell", ComparableEntity_.STRING_VALUE));
-        assertFound(new GreaterThanOrEqualTo<>("Hello", ComparableEntity_.STRING_VALUE));
-        assertNotFound(new GreaterThanOrEqualTo<>("Hellz", ComparableEntity_.STRING_VALUE));
+        assertFound(new GreaterThanOrEqualTo<>(ComparableEntity_.STRING_VALUE, "Hell"));
+        assertFound(new GreaterThanOrEqualTo<>(ComparableEntity_.STRING_VALUE, "Hello"));
+        assertNotFound(new GreaterThanOrEqualTo<>(ComparableEntity_.STRING_VALUE, "Hellz"));
     }
 
     @Test
@@ -54,9 +54,9 @@ class GreaterThanOrEqualToTest extends DatabaseTest {
         entity.setCharValue('M');
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(entity));
 
-        assertFound(new GreaterThanOrEqualTo<>('L', ComparableEntity_.CHAR_VALUE));
-        assertFound(new GreaterThanOrEqualTo<>('M', ComparableEntity_.CHAR_VALUE));
-        assertNotFound(new GreaterThanOrEqualTo<>('N', ComparableEntity_.CHAR_VALUE));
+        assertFound(new GreaterThanOrEqualTo<>(ComparableEntity_.CHAR_VALUE, 'L'));
+        assertFound(new GreaterThanOrEqualTo<>(ComparableEntity_.CHAR_VALUE, 'M'));
+        assertNotFound(new GreaterThanOrEqualTo<>(ComparableEntity_.CHAR_VALUE, 'N'));
     }
 
     @Test
@@ -66,9 +66,9 @@ class GreaterThanOrEqualToTest extends DatabaseTest {
         entity.setDateValue(today);
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(entity));
 
-        assertFound(new GreaterThanOrEqualTo<>(today.minusDays(1), ComparableEntity_.DATE_VALUE));
-        assertFound(new GreaterThanOrEqualTo<>(today, "dateValue"));
-        assertNotFound(new GreaterThanOrEqualTo<>(today.plusDays(1), ComparableEntity_.DATE_VALUE));
+        assertFound(new GreaterThanOrEqualTo<>(ComparableEntity_.DATE_VALUE, today.minusDays(1)));
+        assertFound(new GreaterThanOrEqualTo<>(ComparableEntity_.DATE_VALUE, today));
+        assertNotFound(new GreaterThanOrEqualTo<>(ComparableEntity_.DATE_VALUE, today.plusDays(1)));
     }
 
     @Test
@@ -78,9 +78,9 @@ class GreaterThanOrEqualToTest extends DatabaseTest {
         entity.setDatetimeValue(now);
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(entity));
 
-        assertFound(new GreaterThanOrEqualTo<>(now.minusMinutes(1), ComparableEntity_.DATETIME_VALUE));
-        assertFound(new GreaterThanOrEqualTo<>(now, ComparableEntity_.DATETIME_VALUE));
-        assertNotFound(new GreaterThanOrEqualTo<>(now.plusMinutes(1), ComparableEntity_.DATETIME_VALUE));
+        assertFound(new GreaterThanOrEqualTo<>(ComparableEntity_.DATETIME_VALUE, now.minusMinutes(1)));
+        assertFound(new GreaterThanOrEqualTo<>(ComparableEntity_.DATETIME_VALUE, now));
+        assertNotFound(new GreaterThanOrEqualTo<>(ComparableEntity_.DATETIME_VALUE, now.plusMinutes(1)));
     }
 
     @Test
@@ -91,9 +91,9 @@ class GreaterThanOrEqualToTest extends DatabaseTest {
         entity.setDateValue(LocalDate.of(2023, 6, 15));
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(entity));
 
-        assertFound(new GreaterThanOrEqualTo<>(4, ComparableEntity_.INT_VALUE));
-        assertFound(new GreaterThanOrEqualTo<>("Tex", ComparableEntity_.STRING_VALUE));
-        assertFound(new GreaterThanOrEqualTo<>(LocalDate.of(2023, 6, 14), ComparableEntity_.DATE_VALUE));
+        assertFound(new GreaterThanOrEqualTo<>(ComparableEntity_.INT_VALUE, 4));
+        assertFound(new GreaterThanOrEqualTo<>(ComparableEntity_.STRING_VALUE, "Tex"));
+        assertFound(new GreaterThanOrEqualTo<>(ComparableEntity_.DATE_VALUE, LocalDate.of(2023, 6, 14)));
     }
 
     @Test
@@ -102,8 +102,8 @@ class GreaterThanOrEqualToTest extends DatabaseTest {
         entity.setIntValue(1);
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(entity));
 
-        assertFound(new GreaterThanOrEqualTo<>(null, ComparableEntity_.INT_VALUE));
-        assertNotFound(new GreaterThanOrEqualTo<>(2L, ComparableEntity_.LONG_VALUE));
+        assertFound(new GreaterThanOrEqualTo<>(ComparableEntity_.INT_VALUE, null));
+        assertNotFound(new GreaterThanOrEqualTo<>(ComparableEntity_.LONG_VALUE, 2L));
     }
 
     private void assertFound(Specification<ComparableEntity> spec) {

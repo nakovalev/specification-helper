@@ -18,10 +18,10 @@ class LikeTest extends DatabaseTest {
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
 
         // Поиск с wildcards с обеих сторон (по умолчанию)
-        assertThat(userRepository.findOne(new Like<>("john", User_.USERNAME))).isPresent();
-        assertThat(userRepository.findOne(new Like<>("doe", User_.USERNAME))).isPresent();
-        assertThat(userRepository.findOne(new Like<>("hn_do", User_.USERNAME))).isPresent();
-        assertThat(userRepository.findOne(new Like<>("unknown", User_.USERNAME))).isEmpty();
+        assertThat(userRepository.findOne(new Like<>(User_.USERNAME, "john"))).isPresent();
+        assertThat(userRepository.findOne(new Like<>(User_.USERNAME, "doe"))).isPresent();
+        assertThat(userRepository.findOne(new Like<>(User_.USERNAME, "hn_do"))).isPresent();
+        assertThat(userRepository.findOne(new Like<>(User_.USERNAME, "unknown"))).isEmpty();
     }
 
     @Test
@@ -31,8 +31,8 @@ class LikeTest extends DatabaseTest {
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
 
         // Case-sensitive поиск (по умолчанию)
-        assertThat(userRepository.findOne(new Like<>("john", User_.USERNAME))).isEmpty();
-        assertThat(userRepository.findOne(new Like<>("John", User_.USERNAME))).isPresent();
+        assertThat(userRepository.findOne(new Like<>(User_.USERNAME, "john"))).isEmpty();
+        assertThat(userRepository.findOne(new Like<>(User_.USERNAME, "John"))).isPresent();
     }
 
     @Test
@@ -42,9 +42,9 @@ class LikeTest extends DatabaseTest {
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
 
         // Case-insensitive поиск
-        assertThat(userRepository.findOne(new Like<>("john", true, User_.USERNAME))).isPresent();
-        assertThat(userRepository.findOne(new Like<>("DOE", true, User_.USERNAME))).isPresent();
-        assertThat(userRepository.findOne(new Like<>("hNd", true, User_.USERNAME))).isPresent();
+        assertThat(userRepository.findOne(new Like<>(User_.USERNAME, "john", true))).isPresent();
+        assertThat(userRepository.findOne(new Like<>(User_.USERNAME, "DOE", true))).isPresent();
+        assertThat(userRepository.findOne(new Like<>(User_.USERNAME, "hNd", true))).isPresent();
     }
 
     @Test
@@ -54,16 +54,16 @@ class LikeTest extends DatabaseTest {
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
 
         // START_ONLY - ищем в конце строки
-        assertThat(userRepository.findOne(new Like<>("term", LikeMatchMode.START_ONLY, User_.USERNAME))).isPresent();
-        assertThat(userRepository.findOne(new Like<>("search", LikeMatchMode.START_ONLY, User_.USERNAME))).isEmpty();
+        assertThat(userRepository.findOne(new Like<>(User_.USERNAME, "term", LikeMatchMode.START_ONLY))).isPresent();
+        assertThat(userRepository.findOne(new Like<>(User_.USERNAME, "search", LikeMatchMode.START_ONLY))).isEmpty();
 
         // END_ONLY - ищем в начале строки
-        assertThat(userRepository.findOne(new Like<>("search", LikeMatchMode.END_ONLY, User_.USERNAME))).isPresent();
-        assertThat(userRepository.findOne(new Like<>("term", LikeMatchMode.END_ONLY, User_.USERNAME))).isEmpty();
+        assertThat(userRepository.findOne(new Like<>(User_.USERNAME, "search", LikeMatchMode.END_ONLY))).isPresent();
+        assertThat(userRepository.findOne(new Like<>(User_.USERNAME, "term", LikeMatchMode.END_ONLY))).isEmpty();
 
         // NONE - точное совпадение (эквивалент equals)
-        assertThat(userRepository.findOne(new Like<>("searchterm", LikeMatchMode.NONE, User_.USERNAME))).isPresent();
-        assertThat(userRepository.findOne(new Like<>("search", LikeMatchMode.NONE, User_.USERNAME))).isEmpty();
+        assertThat(userRepository.findOne(new Like<>(User_.USERNAME, "searchterm", LikeMatchMode.NONE))).isPresent();
+        assertThat(userRepository.findOne(new Like<>(User_.USERNAME, "search", LikeMatchMode.NONE))).isEmpty();
     }
 
     @Test
@@ -74,13 +74,13 @@ class LikeTest extends DatabaseTest {
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
 
         // _ работает как single-character wildcard
-        assertThat(userRepository.findOne(new Like<>("j%_d%", User_.USERNAME))).isPresent();
+        assertThat(userRepository.findOne(new Like<>(User_.USERNAME, "j%_d%"))).isPresent();
 
         // Поиск реальных спецсимволов с экранированием
-        assertThat(userRepository.findOne(new Like<>("100\\%\\_match", User_.EMAIL))).isPresent();
+        assertThat(userRepository.findOne(new Like<>(User_.EMAIL, "100\\%\\_match"))).isPresent();
 
         // Смешанный случай
-        assertThat(userRepository.findOne(new Like<>("10%\\_ma%", User_.EMAIL))).isPresent();
+        assertThat(userRepository.findOne(new Like<>(User_.EMAIL, "10%\\_ma%"))).isPresent();
     }
 
     @Test
@@ -90,7 +90,7 @@ class LikeTest extends DatabaseTest {
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
 
         // Поиск escape-символа
-        assertThat(userRepository.findOne(new Like<>("\\\\_esc%", User_.USERNAME))).isPresent();
+        assertThat(userRepository.findOne(new Like<>(User_.USERNAME, "\\\\_esc%"))).isPresent();
     }
 
     @Test
@@ -98,7 +98,7 @@ class LikeTest extends DatabaseTest {
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(userGenerator.one()));
 
         // При null значении - пустая спецификация
-        assertThat(userRepository.findOne(new Like<>(null, User_.USERNAME))).isPresent();
+        assertThat(userRepository.findOne(new Like<>(User_.USERNAME, null))).isPresent();
     }
 
     @Test
@@ -108,10 +108,10 @@ class LikeTest extends DatabaseTest {
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
 
         // Проверка всех вариантов конструктора
-        assertThat(userRepository.findOne(new Like<>("term", User_.USERNAME))).isEmpty();
-        assertThat(userRepository.findOne(new Like<>("term", true, User_.USERNAME))).isPresent();
-        assertThat(userRepository.findOne(new Like<>("term", LikeMatchMode.END_ONLY, User_.USERNAME))).isEmpty();
-        assertThat(userRepository.findOne(new Like<>("term", LikeMatchMode.START_ONLY, true, User_.USERNAME))).isPresent();
+        assertThat(userRepository.findOne(new Like<>(User_.USERNAME, "term"))).isEmpty();
+        assertThat(userRepository.findOne(new Like<>(User_.USERNAME, "term", true))).isPresent();
+        assertThat(userRepository.findOne(new Like<>(User_.USERNAME, "term", LikeMatchMode.END_ONLY))).isEmpty();
+        assertThat(userRepository.findOne(new Like<>(User_.USERNAME, "term", LikeMatchMode.START_ONLY, true))).isPresent();
     }
 
     @Test
@@ -121,7 +121,7 @@ class LikeTest extends DatabaseTest {
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
 
         // Точное совпадение без wildcards
-        assertThat(userRepository.findOne(new Like<>("exactmatch", LikeMatchMode.NONE, User_.USERNAME))).isPresent();
-        assertThat(userRepository.findOne(new Like<>("exact", LikeMatchMode.NONE, User_.USERNAME))).isEmpty();
+        assertThat(userRepository.findOne(new Like<>(User_.USERNAME, "exactmatch", LikeMatchMode.NONE))).isPresent();
+        assertThat(userRepository.findOne(new Like<>(User_.USERNAME, "exact", LikeMatchMode.NONE))).isEmpty();
     }
 }

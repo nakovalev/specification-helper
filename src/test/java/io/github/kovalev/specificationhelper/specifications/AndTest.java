@@ -28,7 +28,7 @@ class AndTest extends DatabaseTest {
         User user = userGenerator.one();
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
 
-        And<User> and = new And<>(new Equal<>(user.getId(), io.github.kovalev.specificationhelper.domain.entity.User_.ID));
+        And<User> and = new And<>(new Equal<>(User_.ID, user.getId()));
         assertThat(userRepository.findAll(and)).hasSize(1).containsExactly(user);
     }
 
@@ -38,8 +38,8 @@ class AndTest extends DatabaseTest {
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
 
         And<User> and = new And<>(
-                new Equal<>(user.getUsername(), User_.USERNAME),
-                new Equal<>(user.getEmail(), User_.EMAIL)
+                new Equal<>(User_.USERNAME, user.getUsername()),
+                new Equal<>(User_.EMAIL, user.getEmail())
         );
         assertThat(userRepository.findAll(and)).hasSize(1).containsExactly(user);
     }
@@ -50,8 +50,8 @@ class AndTest extends DatabaseTest {
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
 
         And<User> and = new And<>(
-                new Equal<>(user.getUsername(), User_.USERNAME),
-                new Equal<>("any@email.ru", User_.EMAIL)
+                new Equal<>(User_.USERNAME, user.getUsername()),
+                new Equal<>(User_.EMAIL, "any@email.ru")
         );
         assertThat(userRepository.findAll(and)).isEmpty();
     }
@@ -61,8 +61,8 @@ class AndTest extends DatabaseTest {
         User user = userGenerator.one();
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
 
-        And<User> and = new And<>(new Equal<>(user.getUsername(), User_.USERNAME));
-        and.add(new Equal<>(user.getEmail(), User_.EMAIL));
+        And<User> and = new And<>(new Equal<>(User_.USERNAME, user.getUsername()));
+        and.add(new Equal<>(User_.EMAIL, user.getEmail()));
 
         assertThat(userRepository.findAll(and)).hasSize(1).containsExactly(user);
     }
@@ -73,8 +73,8 @@ class AndTest extends DatabaseTest {
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
 
         And<User> and = new And<>(
-                new Equal<>(user.getUsername(), User_.USERNAME),
-                new GreaterThanOrEqualTo<>(LocalDateTime.now().minusDays(2), User_.CREATED_AT)
+                new Equal<>(User_.USERNAME, user.getUsername()),
+                new GreaterThanOrEqualTo<>(User_.CREATED_AT, LocalDateTime.now().minusDays(2))
         );
         assertThat(userRepository.findAll(and)).hasSize(1).containsExactly(user);
     }
@@ -85,8 +85,8 @@ class AndTest extends DatabaseTest {
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
 
         List<Specification<User>> specs = List.of(
-                new Equal<>(user.getUsername(), User_.USERNAME),
-                new Equal<>(user.getEmail(), User_.EMAIL)
+                new Equal<>(User_.USERNAME, user.getUsername()),
+                new Equal<>(User_.EMAIL, user.getEmail())
         );
 
         And<User> and = new And<>(specs);

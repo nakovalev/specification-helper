@@ -26,15 +26,15 @@ public class Between<E, C extends Comparable<? super C>>
         implements CustomSpecification<E> {
 
     private final transient List<C> values;
-    private final String[] fields;
+    private final String fields;
 
     /**
      * Конструктор.
      *
-     * @param values  список значений диапазона: {@code values.get(0)} = from, {@code values.get(1)} = to
-     * @param fields  имена полей сущности, для которых применяется диапазон; не может быть {@code null}
+     * @param values список значений диапазона: {@code values.get(0)} = from, {@code values.get(1)} = to
+     * @param fields имена полей сущности, для которых применяется диапазон; не может быть {@code null}
      */
-    public Between(List<C> values, @NonNull String... fields) {
+    public Between(@NonNull String fields, List<C> values) {
         this.values = values;
         this.fields = fields;
     }
@@ -57,12 +57,12 @@ public class Between<E, C extends Comparable<? super C>>
             C to = values.get(1);
 
             if (from != null && to == null) {
-                return new GreaterThanOrEqualTo<E, C>(from, fields).specification();
+                return new GreaterThanOrEqualTo<E, C>(fields, from).specification();
             } else if (from == null && to != null) {
-                return new LessThanOrEqualTo<E, C>(to, fields).specification();
+                return new LessThanOrEqualTo<E, C>(fields, to).specification();
             }
 
-            return new And<E>(new GreaterThanOrEqualTo<>(from, fields), new LessThanOrEqualTo<>(to, fields))
+            return new And<E>(new GreaterThanOrEqualTo<>(fields, from), new LessThanOrEqualTo<>(fields, to))
                     .specification();
         }
 

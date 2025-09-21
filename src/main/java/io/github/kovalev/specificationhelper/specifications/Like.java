@@ -40,8 +40,8 @@ public class Like<E> implements CustomSpecification<E> {
      * @param value  значение для поиска; может быть {@code null}
      * @param fields имена полей сущности; не может быть {@code null}
      */
-    public Like(Object value, @NonNull String... fields) {
-        this(value, LikeMatchMode.BOTH, DEFAULT_IGNORE_CASE, fields);
+    public Like(@NonNull String fields, Object value) {
+        this(fields, value, LikeMatchMode.BOTH, DEFAULT_IGNORE_CASE);
     }
 
     /**
@@ -51,8 +51,8 @@ public class Like<E> implements CustomSpecification<E> {
      * @param ignoreCase если {@code true}, поиск игнорирует регистр
      * @param fields     имена полей сущности; не может быть {@code null}
      */
-    public Like(Object value, boolean ignoreCase, @NonNull String... fields) {
-        this(value, LikeMatchMode.BOTH, ignoreCase, fields);
+    public Like(@NonNull String fields, Object value, boolean ignoreCase) {
+        this(fields, value, LikeMatchMode.BOTH, ignoreCase);
     }
 
     /**
@@ -62,8 +62,8 @@ public class Like<E> implements CustomSpecification<E> {
      * @param likeMatchMode режим добавления подстановочных символов
      * @param fields        имена полей сущности; не может быть {@code null}
      */
-    public Like(Object value, @NonNull LikeMatchMode likeMatchMode, @NonNull String... fields) {
-        this(value, likeMatchMode, DEFAULT_IGNORE_CASE, fields);
+    public Like(@NonNull String fields, Object value, @NonNull LikeMatchMode likeMatchMode) {
+        this(fields, value, likeMatchMode, DEFAULT_IGNORE_CASE);
     }
 
     /**
@@ -74,7 +74,7 @@ public class Like<E> implements CustomSpecification<E> {
      * @param ignoreCase    если {@code true}, поиск игнорирует регистр
      * @param fields        имена полей сущности; не может быть {@code null}
      */
-    public Like(Object value, @NonNull LikeMatchMode likeMatchMode, boolean ignoreCase, @NonNull String... fields) {
+    public Like(@NonNull String fields, Object value, @NonNull LikeMatchMode likeMatchMode, boolean ignoreCase) {
         this.value = value;
         this.likeMatchMode = Objects.requireNonNull(likeMatchMode);
         this.ignoreCase = ignoreCase;

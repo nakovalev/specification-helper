@@ -26,20 +26,20 @@ import org.springframework.lang.NonNull;
  */
 public class Equal<E> extends BaseComparisonSpecification<E> {
 
-    public Equal(Object value, @NonNull String... fields) {
-        super(value, NullHandling.IGNORE, DEFAULT_IGNORE_CASE, fields);
+    public Equal(@NonNull String fields, Object value) {
+        super(fields, value, NullHandling.IGNORE, DEFAULT_IGNORE_CASE);
     }
 
-    public Equal(Object value, boolean ignoreCase, @NonNull String... fields) {
-        super(value, NullHandling.IGNORE, ignoreCase, fields);
+    public Equal(@NonNull String fields, Object value, NullHandling nullHandling) {
+        super(fields, value, nullHandling, DEFAULT_IGNORE_CASE);
     }
 
-    public Equal(Object value, @NonNull NullHandling nullHandling, @NonNull String... fields) {
-        super(value, nullHandling, DEFAULT_IGNORE_CASE, fields);
+    public Equal(@NonNull String fields, Object value, boolean ignoreCase) {
+        super(fields, value, NullHandling.IGNORE, ignoreCase);
     }
 
-    public Equal(Object value, @NonNull NullHandling nullHandling, boolean ignoreCase, @NonNull String... fields) {
-        super(value, nullHandling, ignoreCase, fields);
+    public Equal(@NonNull String fields, Object value, NullHandling nullHandling, boolean ignoreCase) {
+        super(fields, value, nullHandling, ignoreCase);
     }
 
     @Override

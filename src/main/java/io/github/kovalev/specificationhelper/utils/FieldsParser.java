@@ -2,15 +2,15 @@ package io.github.kovalev.specificationhelper.utils;
 
 public class FieldsParser {
 
-    public String[] parse(String... fields) {
-        if (!new CheckFields(fields).nonNull()) {
-            throw new IllegalArgumentException("fields is null or empty");
+    public String[] parse(String fields) {
+        if (fields == null || fields.isBlank()) {
+            throw new IllegalArgumentException("fields is null or blank");
         }
 
-        if (fields.length == 1 && fields[0].contains(".")) {
-            return fields[0].split("\\.");
+        if (fields.contains(".")) {
+            return fields.split("\\.");
         }
 
-        return fields;
+        return new String[]{fields};
     }
 }
