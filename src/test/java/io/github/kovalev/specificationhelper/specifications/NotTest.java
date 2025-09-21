@@ -20,18 +20,18 @@ class NotTest extends DatabaseTest {
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
 
         // 1. Используем NotEqual
-        val notEqualSpec = new NotEqual<User>(user.getUsername(), User_.USERNAME);
+        val notEqualSpec = new NotEqual<User>(User_.USERNAME, user.getUsername());
 
         // 2. Используем Not + Equal
-        val notWithEqualSpec = new Not<User>(new Equal<>(user.getUsername(), User_.USERNAME));
+        val notWithEqualSpec = new Not<User>(new Equal<>(User_.USERNAME, user.getUsername()));
 
         // Проверяем, что обе спецификации дают одинаковый результат
         assertThat(userRepository.findOne(notEqualSpec)).isEmpty();
         assertThat(userRepository.findOne(notWithEqualSpec)).isEmpty();
 
         // Проверяем с другим значением
-        val notEqualForOtherValue = new NotEqual<User>("otherUser", User_.USERNAME);
-        val notWithEqualForOtherValue = new Not<User>(new Equal<>("otherUser", User_.USERNAME));
+        val notEqualForOtherValue = new NotEqual<User>(User_.USERNAME, "otherUser");
+        val notWithEqualForOtherValue = new Not<User>(new Equal<>(User_.USERNAME, "otherUser"));
 
         assertThat(userRepository.findOne(notEqualForOtherValue)).isPresent();
         assertThat(userRepository.findOne(notWithEqualForOtherValue)).isPresent();
@@ -49,8 +49,8 @@ class NotTest extends DatabaseTest {
 
         // NOT (username = "user1" AND email = "user1@example.com")
         val complexNotSpec = new Not<User>(
-                new Equal<>(user1.getUsername(), User_.USERNAME),
-                new Equal<>(user1.getEmail(), User_.EMAIL)
+                new Equal<>(User_.USERNAME, user1.getUsername()),
+                new Equal<>(User_.EMAIL, user1.getEmail())
         );
 
         List<User> result = userRepository.findAll(complexNotSpec);
@@ -67,7 +67,7 @@ class NotTest extends DatabaseTest {
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
 
         // NOT (username = null)
-        val notNullSpec = new Not<User>(new Equal<>(null, NullHandling.USE_IS_NULL, User_.USERNAME));
+        val notNullSpec = new Not<User>(new Equal<>(User_.USERNAME, null, NullHandling.USE_IS_NULL));
 
         // Должен вернуть запись, так как условие username != null не выполняется (username IS NULL)
         assertThat(userRepository.findOne(notNullSpec)).isEmpty();
@@ -107,8 +107,8 @@ class NotTest extends DatabaseTest {
 
     private void checkEquivalenceForValue(Object value, User... expectedUsers) {
         // Создаем обе спецификации
-        val notEqualSpec = new NotEqual<User>(value, User_.USERNAME);
-        val notWithEqualSpec = new Not<User>(new Equal<>(value, User_.USERNAME));
+        val notEqualSpec = new NotEqual<User>(User_.USERNAME, value);
+        val notWithEqualSpec = new Not<User>(new Equal<>(User_.USERNAME, value));
 
         // Получаем результаты
         List<User> notEqualResult = userRepository.findAll(notEqualSpec);
@@ -124,8 +124,8 @@ class NotTest extends DatabaseTest {
     }
 
     private void checkEquivalenceForNullValue(NullHandling nullHandling, User... expectedUsers) {
-        val notEqualSpec = new NotEqual<User>(null, nullHandling, User_.USERNAME);
-        val notWithEqualSpec = new Not<User>(new Equal<>(null, nullHandling, User_.USERNAME));
+        val notEqualSpec = new NotEqual<User>(User_.USERNAME, null, nullHandling);
+        val notWithEqualSpec = new Not<User>(new Equal<>(User_.USERNAME, null, nullHandling));
 
         List<User> notEqualResult = userRepository.findAll(notEqualSpec);
         List<User> notWithEqualResult = userRepository.findAll(notWithEqualSpec);

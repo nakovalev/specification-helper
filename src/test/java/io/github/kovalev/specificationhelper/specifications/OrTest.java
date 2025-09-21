@@ -25,7 +25,7 @@ class OrTest extends DatabaseTest {
         User user = userGenerator.one();
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
 
-        Or<User> or = new Or<>(new Equal<>(user.getId(), User_.ID));
+        Or<User> or = new Or<>(new Equal<>(User_.ID, user.getId()));
         assertThat(userRepository.findAll(or)).hasSize(1).containsExactly(user);
     }
 
@@ -40,8 +40,8 @@ class OrTest extends DatabaseTest {
         });
 
         Or<User> or = new Or<>(
-                new Equal<>(user1.getUsername(), User_.USERNAME),
-                new Equal<>(user2.getUsername(), User_.USERNAME)
+                new Equal<>(User_.USERNAME, user1.getUsername()),
+                new Equal<>(User_.USERNAME, user2.getUsername())
         );
         assertThat(userRepository.findAll(or)).hasSize(2).contains(user1, user2);
     }
@@ -57,8 +57,8 @@ class OrTest extends DatabaseTest {
         });
 
         Or<User> or = new Or<>(
-                new Equal<>(matchingUser.getUsername(), User_.USERNAME),
-                new Equal<>("nonexistent", User_.USERNAME)
+                new Equal<>(User_.USERNAME, matchingUser.getUsername()),
+                new Equal<>(User_.USERNAME, "nonexistent")
         );
         assertThat(userRepository.findAll(or)).hasSize(1).containsExactly(matchingUser);
     }
@@ -75,8 +75,8 @@ class OrTest extends DatabaseTest {
         });
 
         Or<User> or = new Or<>(
-                new Equal<>(user1.getUsername(), User_.USERNAME),
-                new LessThanOrEqualTo<>(LocalDateTime.now(), User_.CREATED_AT)
+                new Equal<>(User_.USERNAME, user1.getUsername()),
+                new LessThanOrEqualTo<>(User_.CREATED_AT, LocalDateTime.now())
         );
         assertThat(userRepository.findAll(or)).hasSize(2).contains(user1, user2);
     }
@@ -92,8 +92,8 @@ class OrTest extends DatabaseTest {
         });
 
         List<Specification<User>> specs = List.of(
-                new Equal<>(user1.getUsername(), User_.USERNAME),
-                new Equal<>(user2.getUsername(), User_.USERNAME)
+                new Equal<>(User_.USERNAME, user1.getUsername()),
+                new Equal<>(User_.USERNAME, user2.getUsername())
         );
 
         Or<User> or = new Or<>(specs);
@@ -111,12 +111,12 @@ class OrTest extends DatabaseTest {
         });
 
         Or<User> or = new Or<>(
-                new Equal<>(user.getEmail(), User_.EMAIL),
-                new Equal<>("alternative@example.com", User_.EMAIL)
+                new Equal<>(User_.EMAIL, user.getEmail()),
+                new Equal<>(User_.EMAIL, "alternative@example.com")
         );
 
         And<User> and = new And<>(
-                new Equal<>(user.getUsername(), User_.USERNAME),
+                new Equal<>(User_.USERNAME, user.getUsername()),
                 or
         );
 

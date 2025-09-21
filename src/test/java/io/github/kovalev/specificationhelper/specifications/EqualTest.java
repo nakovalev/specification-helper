@@ -19,11 +19,11 @@ class EqualTest extends DatabaseTest {
         User user = userGenerator.one();
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
 
-        assertThat(userRepository.findOne(new Equal<>(user.getId(), User_.ID))).isPresent();
-        assertThat(userRepository.findOne(new Equal<>(user.getUsername(), User_.USERNAME))).isPresent();
-        assertThat(userRepository.findOne(new Equal<>(user.getEmail(), User_.EMAIL))).isPresent();
+        assertThat(userRepository.findOne(new Equal<>(User_.ID, user.getId()))).isPresent();
+        assertThat(userRepository.findOne(new Equal<>(User_.USERNAME, user.getUsername()))).isPresent();
+        assertThat(userRepository.findOne(new Equal<>(User_.EMAIL, user.getEmail()))).isPresent();
 
-        assertThat(userRepository.findOne(new Equal<>("nonexistent", User_.USERNAME))).isEmpty();
+        assertThat(userRepository.findOne(new Equal<>(User_.USERNAME,"nonexistent"))).isEmpty();
     }
 
     @Test
@@ -32,9 +32,9 @@ class EqualTest extends DatabaseTest {
         user.setUsername("TestUser");
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
 
-        assertThat(userRepository.findOne(new Equal<>("TestUser", User_.USERNAME))).isPresent();
-        assertThat(userRepository.findOne(new Equal<>("testuser", User_.USERNAME))).isEmpty();
-        assertThat(userRepository.findOne(new Equal<>("TESTUSER", User_.USERNAME))).isEmpty();
+        assertThat(userRepository.findOne(new Equal<>(User_.USERNAME, "TestUser"))).isPresent();
+        assertThat(userRepository.findOne(new Equal<>(User_.USERNAME, "testuser"))).isEmpty();
+        assertThat(userRepository.findOne(new Equal<>(User_.USERNAME, "TESTUSER"))).isEmpty();
     }
 
     @Test
@@ -43,17 +43,17 @@ class EqualTest extends DatabaseTest {
         user.setUsername("TestUser");
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
 
-        assertThat(userRepository.findOne(new Equal<>("TestUser", true, User_.USERNAME))).isPresent();
-        assertThat(userRepository.findOne(new Equal<>("testuser", true, User_.USERNAME))).isPresent();
-        assertThat(userRepository.findOne(new Equal<>("TESTUSER", true, User_.USERNAME))).isPresent();
-        assertThat(userRepository.findOne(new Equal<>("different", true, User_.USERNAME))).isEmpty();
+        assertThat(userRepository.findOne(new Equal<>(User_.USERNAME, "TestUser", true))).isPresent();
+        assertThat(userRepository.findOne(new Equal<>(User_.USERNAME, "testuser", true))).isPresent();
+        assertThat(userRepository.findOne(new Equal<>(User_.USERNAME, "TESTUSER", true))).isPresent();
+        assertThat(userRepository.findOne(new Equal<>(User_.USERNAME, "different", true))).isEmpty();
     }
 
     @Test
     void ignoreNullValue() {
         User user = userGenerator.one();
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
-        assertThat(userRepository.findOne(new Equal<>(null, User_.ID))).isPresent();
+        assertThat(userRepository.findOne(new Equal<>(User_.ID, null))).isPresent();
     }
 
     @Test
@@ -67,10 +67,10 @@ class EqualTest extends DatabaseTest {
             entityManager.persist(userWithEmail);
         });
 
-        val emailIsNull = new Equal<User>(null, NullHandling.USE_IS_NULL, User_.EMAIL);
+        val emailIsNull = new Equal<User>(User_.EMAIL, null, NullHandling.USE_IS_NULL);
         assertThat(userRepository.findAll(emailIsNull)).hasSize(1).allMatch(u -> u.getEmail() == null);
 
-        val usernameEqual = new Equal<User>("test", NullHandling.USE_IS_NULL, User_.USERNAME);
+        val usernameEqual = new Equal<User>(User_.USERNAME, "test", NullHandling.USE_IS_NULL);
         assertThat(userRepository.findOne(usernameEqual)).isEmpty();
     }
 
@@ -81,8 +81,8 @@ class EqualTest extends DatabaseTest {
         user.setCreatedAt(createdAt);
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
 
-        assertThat(userRepository.findOne(new Equal<>(createdAt, User_.CREATED_AT))).isPresent();
-        assertThat(userRepository.findOne(new Equal<>(createdAt.plusSeconds(1), User_.CREATED_AT))).isEmpty();
+        assertThat(userRepository.findOne(new Equal<>(User_.CREATED_AT, createdAt))).isPresent();
+        assertThat(userRepository.findOne(new Equal<>(User_.CREATED_AT, createdAt.plusSeconds(1)))).isEmpty();
     }
 
     @Test
@@ -91,9 +91,9 @@ class EqualTest extends DatabaseTest {
         user.setUsername("TestUser");
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(user));
 
-        assertThat(userRepository.findOne(new Equal<>("TestUser", User_.USERNAME))).isPresent();
-        assertThat(userRepository.findOne(new Equal<>("TestUser", true, User_.USERNAME))).isPresent();
-        assertThat(userRepository.findOne(new Equal<>("TestUser", NullHandling.IGNORE, User_.USERNAME))).isPresent();
-        assertThat(userRepository.findOne(new Equal<>("TestUser", NullHandling.USE_IS_NULL, true, User_.USERNAME))).isPresent();
+        assertThat(userRepository.findOne(new Equal<>(User_.USERNAME, "TestUser"))).isPresent();
+        assertThat(userRepository.findOne(new Equal<>(User_.USERNAME, "TestUser", true))).isPresent();
+        assertThat(userRepository.findOne(new Equal<>(User_.USERNAME, "TestUser", NullHandling.IGNORE))).isPresent();
+        assertThat(userRepository.findOne(new Equal<>(User_.USERNAME, "TestUser", NullHandling.USE_IS_NULL, true))).isPresent();
     }
 }

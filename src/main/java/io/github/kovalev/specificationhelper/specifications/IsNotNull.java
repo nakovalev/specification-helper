@@ -23,7 +23,7 @@ public class IsNotNull<E> implements CustomSpecification<E> {
      *
      * @param fields имена полей сущности, для которых проверяется ненулевое значение; не может быть {@code null}
      */
-    public IsNotNull(@NonNull String... fields) {
+    public IsNotNull(@NonNull String fields) {
         this.fields = new FieldsParser().parse(fields);
     }
 

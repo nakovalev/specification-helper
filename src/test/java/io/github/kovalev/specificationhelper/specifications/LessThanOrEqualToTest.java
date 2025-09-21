@@ -21,9 +21,9 @@ class LessThanOrEqualToTest extends DatabaseTest {
         entity.setIntValue(10);
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(entity));
 
-        assertNotFound(new LessThanOrEqualTo<>(9, ComparableEntity_.INT_VALUE));
-        assertFound(new LessThanOrEqualTo<>(10, ComparableEntity_.INT_VALUE));
-        assertFound(new LessThanOrEqualTo<>(11, ComparableEntity_.INT_VALUE));
+        assertNotFound(new LessThanOrEqualTo<>(ComparableEntity_.INT_VALUE, 9));
+        assertFound(new LessThanOrEqualTo<>(ComparableEntity_.INT_VALUE, 10));
+        assertFound(new LessThanOrEqualTo<>(ComparableEntity_.INT_VALUE, 11));
     }
 
     @Test
@@ -32,9 +32,9 @@ class LessThanOrEqualToTest extends DatabaseTest {
         entity.setBigDecimalValue(new BigDecimal("15.7500"));
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(entity));
 
-        assertNotFound(new LessThanOrEqualTo<>(new BigDecimal("15.7499"), ComparableEntity_.BIG_DECIMAL_VALUE));
-        assertFound(new LessThanOrEqualTo<>(new BigDecimal("15.75"), ComparableEntity_.BIG_DECIMAL_VALUE));
-        assertFound(new LessThanOrEqualTo<>(new BigDecimal("15.7501"), ComparableEntity_.BIG_DECIMAL_VALUE));
+        assertNotFound(new LessThanOrEqualTo<>(ComparableEntity_.BIG_DECIMAL_VALUE, new BigDecimal("15.7499")));
+        assertFound(new LessThanOrEqualTo<>(ComparableEntity_.BIG_DECIMAL_VALUE, new BigDecimal("15.75")));
+        assertFound(new LessThanOrEqualTo<>(ComparableEntity_.BIG_DECIMAL_VALUE, new BigDecimal("15.7501")));
     }
 
     @Test
@@ -43,9 +43,9 @@ class LessThanOrEqualToTest extends DatabaseTest {
         entity.setStringValue("Hello");
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(entity));
 
-        assertNotFound(new LessThanOrEqualTo<>("Hell", ComparableEntity_.STRING_VALUE));
-        assertFound(new LessThanOrEqualTo<>("Hello", ComparableEntity_.STRING_VALUE));
-        assertFound(new LessThanOrEqualTo<>("Hellz", ComparableEntity_.STRING_VALUE));
+        assertNotFound(new LessThanOrEqualTo<>(ComparableEntity_.STRING_VALUE, "Hell"));
+        assertFound(new LessThanOrEqualTo<>(ComparableEntity_.STRING_VALUE, "Hello"));
+        assertFound(new LessThanOrEqualTo<>(ComparableEntity_.STRING_VALUE, "Hellz"));
     }
 
     @Test
@@ -54,9 +54,9 @@ class LessThanOrEqualToTest extends DatabaseTest {
         entity.setCharValue('M');
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(entity));
 
-        assertNotFound(new LessThanOrEqualTo<>('L', ComparableEntity_.CHAR_VALUE));
-        assertFound(new LessThanOrEqualTo<>('M', ComparableEntity_.CHAR_VALUE));
-        assertFound(new LessThanOrEqualTo<>('N', ComparableEntity_.CHAR_VALUE));
+        assertNotFound(new LessThanOrEqualTo<>(ComparableEntity_.CHAR_VALUE, 'L'));
+        assertFound(new LessThanOrEqualTo<>(ComparableEntity_.CHAR_VALUE, 'M'));
+        assertFound(new LessThanOrEqualTo<>(ComparableEntity_.CHAR_VALUE, 'N'));
     }
 
     @Test
@@ -66,9 +66,9 @@ class LessThanOrEqualToTest extends DatabaseTest {
         entity.setDateValue(today);
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(entity));
 
-        assertNotFound(new LessThanOrEqualTo<>(today.minusDays(1), ComparableEntity_.DATE_VALUE));
-        assertFound(new LessThanOrEqualTo<>(today, ComparableEntity_.DATE_VALUE));
-        assertFound(new LessThanOrEqualTo<>(today.plusDays(1), ComparableEntity_.DATE_VALUE));
+        assertNotFound(new LessThanOrEqualTo<>(ComparableEntity_.DATE_VALUE, today.minusDays(1)));
+        assertFound(new LessThanOrEqualTo<>(ComparableEntity_.DATE_VALUE, today));
+        assertFound(new LessThanOrEqualTo<>(ComparableEntity_.DATE_VALUE, today.plusDays(1)));
     }
 
     @Test
@@ -78,9 +78,9 @@ class LessThanOrEqualToTest extends DatabaseTest {
         entity.setDatetimeValue(now);
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(entity));
 
-        assertNotFound(new LessThanOrEqualTo<>(now.minusMinutes(1), ComparableEntity_.DATETIME_VALUE));
-        assertFound(new LessThanOrEqualTo<>(now, ComparableEntity_.DATETIME_VALUE));
-        assertFound(new LessThanOrEqualTo<>(now.plusMinutes(1), ComparableEntity_.DATETIME_VALUE));
+        assertNotFound(new LessThanOrEqualTo<>(ComparableEntity_.DATETIME_VALUE, now.minusMinutes(1)));
+        assertFound(new LessThanOrEqualTo<>(ComparableEntity_.DATETIME_VALUE, now));
+        assertFound(new LessThanOrEqualTo<>(ComparableEntity_.DATETIME_VALUE, now.plusMinutes(1)));
     }
 
     @Test
@@ -91,13 +91,13 @@ class LessThanOrEqualToTest extends DatabaseTest {
         entity.setDateValue(LocalDate.of(2023, 6, 15));
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(entity));
 
-        assertNotFound(new LessThanOrEqualTo<>(4, ComparableEntity_.INT_VALUE));
-        assertFound(new LessThanOrEqualTo<>(5, ComparableEntity_.INT_VALUE));
-        assertFound(new LessThanOrEqualTo<>(6, ComparableEntity_.INT_VALUE));
+        assertNotFound(new LessThanOrEqualTo<>(ComparableEntity_.INT_VALUE, 4));
+        assertFound(new LessThanOrEqualTo<>(ComparableEntity_.INT_VALUE, 5));
+        assertFound(new LessThanOrEqualTo<>(ComparableEntity_.INT_VALUE, 6));
 
-        assertNotFound(new LessThanOrEqualTo<>("Te", ComparableEntity_.STRING_VALUE));
-        assertFound(new LessThanOrEqualTo<>("Text", ComparableEntity_.STRING_VALUE));
-        assertFound(new LessThanOrEqualTo<>("Texu", ComparableEntity_.STRING_VALUE));
+        assertNotFound(new LessThanOrEqualTo<>(ComparableEntity_.STRING_VALUE, "Te"));
+        assertFound(new LessThanOrEqualTo<>(ComparableEntity_.STRING_VALUE, "Text"));
+        assertFound(new LessThanOrEqualTo<>(ComparableEntity_.STRING_VALUE, "Texu"));
     }
 
     @Test
@@ -106,9 +106,9 @@ class LessThanOrEqualToTest extends DatabaseTest {
         entity.setIntValue(1);
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(entity));
 
-        assertFound(new LessThanOrEqualTo<>(null, ComparableEntity_.INT_VALUE));
-        assertFound(new LessThanOrEqualTo<>(2, ComparableEntity_.INT_VALUE));
-        assertNotFound(new LessThanOrEqualTo<>(0L, ComparableEntity_.LONG_VALUE));
+        assertFound(new LessThanOrEqualTo<>(ComparableEntity_.INT_VALUE, null));
+        assertFound(new LessThanOrEqualTo<>(ComparableEntity_.INT_VALUE, 2));
+        assertNotFound(new LessThanOrEqualTo<>(ComparableEntity_.LONG_VALUE, 0L));
     }
 
     private void assertFound(Specification<ComparableEntity> spec) {

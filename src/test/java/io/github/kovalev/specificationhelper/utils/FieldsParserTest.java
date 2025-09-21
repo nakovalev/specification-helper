@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FieldsParserTest {
@@ -15,14 +14,21 @@ class FieldsParserTest {
     void shouldThrowExceptionWhenFieldsIsNull() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> parser.parse(null));
-        assertEquals("fields is null or empty", exception.getMessage());
+        assertEquals("fields is null or blank", exception.getMessage());
     }
 
     @Test
     void shouldThrowExceptionWhenFieldsIsEmpty() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> parser.parse());
-        assertEquals("fields is null or empty", exception.getMessage());
+                () -> parser.parse(""));
+        assertEquals("fields is null or blank", exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenFieldsIsBlank() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> parser.parse("   "));
+        assertEquals("fields is null or blank", exception.getMessage());
     }
 
     @Test
@@ -31,12 +37,6 @@ class FieldsParserTest {
         assertArrayEquals(new String[]{"order", "item", "price"}, result);
     }
 
-    @Test
-    void shouldReturnSameArrayWhenMultipleFieldsWithoutDot() {
-        String[] input = {"order", "item", "price"};
-        String[] result = parser.parse(input);
-        assertSame(input, result);
-    }
 
     @Test
     void shouldNotSplitSingleFieldWithoutDot() {

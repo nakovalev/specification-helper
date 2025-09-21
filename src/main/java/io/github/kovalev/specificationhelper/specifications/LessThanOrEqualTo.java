@@ -36,7 +36,7 @@ public class LessThanOrEqualTo<E, C extends Comparable<? super C>>
      * @param value  значение для сравнения; если {@code null}, спецификация будет пустой
      * @param fields имена полей сущности, к которым применяется условие; не может быть {@code null}
      */
-    public LessThanOrEqualTo(C value, @NonNull String... fields) {
+    public LessThanOrEqualTo(@NonNull String fields, C value) {
         this.value = value;
         this.fields = new FieldsParser().parse(fields);
     }
