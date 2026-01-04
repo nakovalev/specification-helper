@@ -22,7 +22,7 @@ class GreaterThanOrEqualToTest extends DatabaseTest {
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(entity));
 
         assertFound(new GreaterThanOrEqualTo<>(ComparableEntity_.INT_VALUE, 9));
-        assertFound(new GreaterThanOrEqualTo<>(ComparableEntity_.INT_VALUE,10));
+        assertFound(new GreaterThanOrEqualTo<>(ComparableEntity_.INT_VALUE, 10));
         assertNotFound(new GreaterThanOrEqualTo<>(ComparableEntity_.INT_VALUE, 11));
     }
 
@@ -32,7 +32,7 @@ class GreaterThanOrEqualToTest extends DatabaseTest {
         entity.setBigDecimalValue(new BigDecimal("15.7500"));
         transactionalExecutor.executeWithInNewTransaction(() -> entityManager.persist(entity));
 
-        assertFound(new GreaterThanOrEqualTo<>(ComparableEntity_.BIG_DECIMAL_VALUE ,new BigDecimal("15.7499")));
+        assertFound(new GreaterThanOrEqualTo<>(ComparableEntity_.BIG_DECIMAL_VALUE, new BigDecimal("15.7499")));
         assertFound(new GreaterThanOrEqualTo<>(ComparableEntity_.BIG_DECIMAL_VALUE, new BigDecimal("15.75")));
         assertNotFound(new GreaterThanOrEqualTo<>(ComparableEntity_.BIG_DECIMAL_VALUE, new BigDecimal("15.7501")));
     }

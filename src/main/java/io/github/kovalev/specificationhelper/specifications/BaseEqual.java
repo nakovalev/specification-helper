@@ -2,7 +2,7 @@ package io.github.kovalev.specificationhelper.specifications;
 
 
 import io.github.kovalev.specificationhelper.enums.NullHandling;
-import io.github.kovalev.specificationhelper.utils.Expressions;
+import io.github.kovalev.specificationhelper.utils.ExpressionUtils;
 import io.github.kovalev.specificationhelper.utils.FieldsParser;
 import io.github.kovalev.specificationhelper.utils.PathCalculator;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -12,12 +12,7 @@ import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
-import java.util.Objects;
+import java.time.*;
 
 /**
  * Базовый абстрактный класс для спецификаций сравнения полей.
@@ -36,19 +31,18 @@ import java.util.Objects;
  *
  * <p><b>Особенности работы со строками:</b><br>
  * Если значение является {@link CharSequence}, поддерживается игнорирование регистра
- * через флаг {@code ignoreCase} и использование вспомогательного класса {@link Expressions} для корректного построения предикатов.</p>
+ * через флаг {@code ignoreCase} и использование вспомогательного класса {@link ExpressionUtils} для корректного построения предикатов.</p>
  *
  * @param <E> тип сущности
  */
-public abstract class BaseComparisonSpecification<E> implements CustomSpecification<E> {
+public abstract class BaseEqual<E> implements CustomSpecification<E> {
 
     protected static final boolean DEFAULT_IGNORE_CASE = false;
 
-    protected final transient Object value;
+    protected final Object value;
     protected final String[] fields;
     protected final NullHandling nullHandling;
     protected final boolean ignoreCase;
-    protected final transient Expressions expressions;
 
     /**
      * Конструктор базовой спецификации сравнения.
@@ -58,20 +52,19 @@ public abstract class BaseComparisonSpecification<E> implements CustomSpecificat
      * @param ignoreCase   если {@code true}, игнорируется регистр для строк
      * @param fields       имена полей сущности, к которым применяется сравнение; не может быть {@code null}
      */
-    protected BaseComparisonSpecification(@NonNull String fields, Object value,
-                                          @NonNull NullHandling nullHandling, boolean ignoreCase) {
+    protected BaseEqual(@NonNull String fields, Object value,
+                        @NonNull NullHandling nullHandling, boolean ignoreCase) {
         this.value = value;
-        this.nullHandling = Objects.requireNonNull(nullHandling);
+        this.nullHandling = nullHandling;
         this.ignoreCase = ignoreCase;
-        this.fields = new FieldsParser().parse(fields);
-        this.expressions = new Expressions();
+        this.fields = new FieldsParser(fields).parse();
     }
 
     /**
      * Возвращает JPA {@link Specification} для текущей сравниваемой сущности.
      *
      * <p>Если значение {@code null}, вызывается {@link #handleNull(CriteriaBuilder, Path)}.
-     * Если значение является строкой, вызывается {@link #resolveCase(CriteriaBuilder, Path, Expressions, String)}.
+     * Если значение является строкой, вызывается {@link #resolveCase(CriteriaBuilder, Path, String)}.
      * Для остальных типов создаётся предикат через {@link #createPredicate(CriteriaBuilder, Expression, Object)}.</p>
      *
      * @return спецификация JPA Criteria API
@@ -86,10 +79,10 @@ public abstract class BaseComparisonSpecification<E> implements CustomSpecificat
             }
 
             if (value instanceof CharSequence str) {
-                return resolveCase(cb, path, expressions, String.valueOf(str));
+                return resolveCase(cb, path, String.valueOf(str));
             }
 
-            Expression<?> expression = expressions.get(cb, path, value);
+            Expression<?> expression = ExpressionUtils.expression(cb, path, value);
             return createPredicate(cb, expression, value);
         };
     }
@@ -118,10 +111,8 @@ public abstract class BaseComparisonSpecification<E> implements CustomSpecificat
      *
      * @param criteriaBuilder {@link CriteriaBuilder} для создания предиката
      * @param path            путь к полю
-     * @param expressions     вспомогательный объект для работы с выражениями
      * @param str             строковое значение
      * @return предикат для JPA Criteria API
      */
-    protected abstract Predicate resolveCase(CriteriaBuilder criteriaBuilder, Path<Object> path,
-                                             Expressions expressions, String str);
+    protected abstract Predicate resolveCase(CriteriaBuilder criteriaBuilder, Path<Object> path, String str);
 }

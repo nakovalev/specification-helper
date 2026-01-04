@@ -13,18 +13,13 @@ import org.junit.jupiter.api.Test;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ExpressionsTest extends DatabaseTest {
+class ExpressionUtilsTest extends DatabaseTest {
 
     @Test
     void testLocalDate() {
@@ -216,7 +211,7 @@ class ExpressionsTest extends DatabaseTest {
         val query = cb.createQuery(TemporalEntity.class);
         val root = query.from(TemporalEntity.class);
 
-        Expression<?> expression = new Expressions().get(cb, root.get(field), value);
+        Expression<?> expression = ExpressionUtils.expression(cb, root.get(field), value);
         Predicate predicate = cb.equal(expression, value);
 
         query.where(predicate);

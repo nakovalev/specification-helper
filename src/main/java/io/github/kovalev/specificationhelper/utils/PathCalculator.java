@@ -1,17 +1,10 @@
 package io.github.kovalev.specificationhelper.utils;
 
 
-import jakarta.persistence.criteria.Fetch;
-import jakarta.persistence.criteria.From;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import org.springframework.lang.NonNull;
 
-import java.util.Optional;
-
-public class PathCalculator<E, P> {
+public final class PathCalculator<E, P> {
 
     private final Root<E> root;
     private final String[] fields;
@@ -39,24 +32,26 @@ public class PathCalculator<E, P> {
         return join.get(fields[fields.length - 1]);
     }
 
-    /*
-     * rootOrJoin.getFetches - коллекция жадных JOIN. Таких, где fetchType.EAGER
-     * rootOrJoin.getJoins - коллекция основных JOIN, добавленных в ручную при построении запроса
-     * rootOrJoin.join - создает новый JOIN в коллекции joins
-     */
-    private <X> Join<X, ?> getOrCreateJoin(From<?, X> rootOrJoin, String attribute) {
-        Optional<Fetch<X, ?>> fetch = rootOrJoin.getFetches().stream()
-                .filter(f -> f.getAttribute().getName().equals(attribute) && f.getJoinType() == JoinType.LEFT)
-                .findFirst();
-
-        if (fetch.isPresent()) {
-            return rootOrJoin.join(attribute, fetch.get().getJoinType());
+    private <X> Join<X, ?> getOrCreateJoin(From<?, X> rootOrJoin, String field) {
+        // rootOrJoin.getFetches - коллекция жадных JOIN. Таких, где fetchType.EAGER
+        for (Fetch<X, ?> fetch : rootOrJoin.getFetches()) {
+            if (isLeftJoin(field, fetch.getAttribute().getName(), fetch.getJoinType())) {
+                return rootOrJoin.join(field, fetch.getJoinType());
+            }
         }
 
-        Optional<Join<X, ?>> join = rootOrJoin.getJoins().stream()
-                .filter(j -> j.getAttribute().getName().equals(attribute) && j.getJoinType() == JoinType.LEFT)
-                .findFirst();
+        // rootOrJoin.getJoins - коллекция основных JOIN, добавленных в ручную при построении запроса
+        for (Join<X, ?> join : rootOrJoin.getJoins()) {
+            if (isLeftJoin(field, join.getAttribute().getName(), join.getJoinType())) {
+                return join;
+            }
+        }
 
-        return join.orElseGet(() -> rootOrJoin.join(attribute, JoinType.LEFT));
+        // rootOrJoin.join - создает новый JOIN в коллекции joins
+        return rootOrJoin.join(field, JoinType.LEFT);
+    }
+
+    private boolean isLeftJoin(String field, String attributeName, JoinType joinType) {
+        return field.equals(attributeName) && joinType == JoinType.LEFT;
     }
 }

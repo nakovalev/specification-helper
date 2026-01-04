@@ -14,7 +14,7 @@ import org.springframework.lang.NonNull;
  *
  * @param <E> тип сущности
  */
-public class IsNull<E> implements CustomSpecification<E> {
+public final class IsNull<E> implements CustomSpecification<E> {
 
     private final String[] fields;
 
@@ -24,7 +24,7 @@ public class IsNull<E> implements CustomSpecification<E> {
      * @param fields имена полей сущности, для которых проверяется значение {@code null}; не может быть {@code null}
      */
     public IsNull(@NonNull String fields) {
-        this.fields = new FieldsParser().parse(fields);
+        this.fields = new FieldsParser(fields).parse();
     }
 
     /**

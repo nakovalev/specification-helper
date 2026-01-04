@@ -21,20 +21,20 @@ import java.util.Collection;
  * @param <E> тип сущности
  * @param <I> тип значения для сравнения (элементы коллекции)
  */
-public class In<E, I> implements CustomSpecification<E> {
+public final class In<E, I> implements CustomSpecification<E> {
 
-    private final transient Collection<I> values;
+    private final Collection<I> values;
     private final String[] fields;
 
     /**
      * Конструктор.
      *
-     * @param values  коллекция значений для поиска; может быть {@code null} или пустой
-     * @param fields  имена полей сущности, по которым выполняется поиск; не может быть {@code null}
+     * @param values коллекция значений для поиска; может быть {@code null} или пустой
+     * @param fields имена полей сущности, по которым выполняется поиск; не может быть {@code null}
      */
     public In(@NonNull String fields, Collection<I> values) {
         this.values = values;
-        this.fields = new FieldsParser().parse(fields);
+        this.fields = new FieldsParser(fields).parse();
     }
 
     /**
@@ -47,13 +47,13 @@ public class In<E, I> implements CustomSpecification<E> {
      */
     @Override
     public Specification<E> specification() {
-        if (new CheckValue(values).nonNull()) {
-            return (root, query, cb) -> {
-                val path = new PathCalculator<E, Collection<I>>(root, fields).path();
-                return cb.in(path).value(values);
-            };
+        if (new CheckValue(values).isNull()) {
+            return new Empty<>();
         }
 
-        return new Empty<>();
+        return (root, query, cb) -> {
+            val path = new PathCalculator<E, Collection<I>>(root, fields).path();
+            return cb.in(path).value(values);
+        };
     }
 }

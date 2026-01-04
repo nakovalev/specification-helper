@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.Objects;
 
 @RequiredArgsConstructor
-public class CheckValue {
+public final class CheckValue {
 
     private final Object value;
 
@@ -20,5 +20,16 @@ public class CheckValue {
             return !collection.isEmpty() && collection.stream().anyMatch(Objects::nonNull);
         }
         return true;
+    }
+
+    public boolean isNull() {
+        if (value == null) {
+            return true;
+        } else if (value instanceof String str) {
+            return !StringUtils.hasText(str);
+        } else if (value instanceof Collection<?> collection) {
+            return collection.isEmpty() || collection.stream().noneMatch(Objects::nonNull);
+        }
+        return false;
     }
 }

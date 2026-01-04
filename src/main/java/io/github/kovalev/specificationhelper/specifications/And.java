@@ -22,7 +22,7 @@ import java.util.List;
  *
  * @param <E> тип сущности
  */
-public class And<E> implements CustomSpecification<E> {
+public final class And<E> implements CustomSpecification<E> {
 
     private final List<Specification<E>> specifications = new ArrayList<>();
 

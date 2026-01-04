@@ -3,15 +3,12 @@ package io.github.kovalev.specificationhelper.specifications;
 
 import io.github.kovalev.specificationhelper.enums.LikeMatchMode;
 import io.github.kovalev.specificationhelper.utils.CheckValue;
-import io.github.kovalev.specificationhelper.utils.Expressions;
+import io.github.kovalev.specificationhelper.utils.ExpressionUtils;
 import io.github.kovalev.specificationhelper.utils.FieldsParser;
 import io.github.kovalev.specificationhelper.utils.PathCalculator;
-import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Path;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
-
-import java.util.Objects;
 
 /**
  * Спецификация "LIKE" для поиска строковых значений с шаблонами.
@@ -23,15 +20,14 @@ import java.util.Objects;
  *
  * @param <E> тип сущности
  */
-public class Like<E> implements CustomSpecification<E> {
+public final class Like<E> implements CustomSpecification<E> {
 
     private static final boolean DEFAULT_IGNORE_CASE = false;
 
-    private final transient Object value;
+    private final String value;
     private final String[] fields;
     private final boolean ignoreCase;
     private final LikeMatchMode likeMatchMode;
-    private final transient Expressions expressions;
 
     /**
      * Конструктор со значением и полями.
@@ -40,7 +36,7 @@ public class Like<E> implements CustomSpecification<E> {
      * @param value  значение для поиска; может быть {@code null}
      * @param fields имена полей сущности; не может быть {@code null}
      */
-    public Like(@NonNull String fields, Object value) {
+    public Like(@NonNull String fields, String value) {
         this(fields, value, LikeMatchMode.BOTH, DEFAULT_IGNORE_CASE);
     }
 
@@ -51,7 +47,7 @@ public class Like<E> implements CustomSpecification<E> {
      * @param ignoreCase если {@code true}, поиск игнорирует регистр
      * @param fields     имена полей сущности; не может быть {@code null}
      */
-    public Like(@NonNull String fields, Object value, boolean ignoreCase) {
+    public Like(@NonNull String fields, String value, boolean ignoreCase) {
         this(fields, value, LikeMatchMode.BOTH, ignoreCase);
     }
 
@@ -62,7 +58,7 @@ public class Like<E> implements CustomSpecification<E> {
      * @param likeMatchMode режим добавления подстановочных символов
      * @param fields        имена полей сущности; не может быть {@code null}
      */
-    public Like(@NonNull String fields, Object value, @NonNull LikeMatchMode likeMatchMode) {
+    public Like(@NonNull String fields, String value, @NonNull LikeMatchMode likeMatchMode) {
         this(fields, value, likeMatchMode, DEFAULT_IGNORE_CASE);
     }
 
@@ -74,12 +70,11 @@ public class Like<E> implements CustomSpecification<E> {
      * @param ignoreCase    если {@code true}, поиск игнорирует регистр
      * @param fields        имена полей сущности; не может быть {@code null}
      */
-    public Like(@NonNull String fields, Object value, @NonNull LikeMatchMode likeMatchMode, boolean ignoreCase) {
+    public Like(@NonNull String fields, String value, @NonNull LikeMatchMode likeMatchMode, boolean ignoreCase) {
         this.value = value;
-        this.likeMatchMode = Objects.requireNonNull(likeMatchMode);
+        this.likeMatchMode = likeMatchMode;
         this.ignoreCase = ignoreCase;
-        this.fields = new FieldsParser().parse(fields);
-        this.expressions = new Expressions();
+        this.fields = new FieldsParser(fields).parse();
     }
 
     /**
@@ -93,36 +88,25 @@ public class Like<E> implements CustomSpecification<E> {
      */
     @Override
     public Specification<E> specification() {
-        if (new CheckValue(value).nonNull()) {
-            return (root, query, cb) -> {
-                Path<Object> path = new PathCalculator<>(root, fields).path();
-                Expression<String> stringExpression = expressions.get(cb, path, value).as(String.class);
-
-                String pattern = applyWildcards(String.valueOf(value));
-
-                if (ignoreCase) {
-                    return cb.like(expressions.toLower(cb, stringExpression), pattern.toLowerCase(), '\\');
-                }
-
-                return cb.like(stringExpression, pattern, '\\');
-            };
+        if (new CheckValue(value).isNull()) {
+            return new Empty<>();
         }
 
-        return new Empty<>();
-    }
+        return (root, query, cb) -> {
+            Path<String> path = new PathCalculator<E, String>(root, fields).path();
 
-    /**
-     * Применяет подстановочные символы к значению в зависимости от {@link LikeMatchMode}.
-     *
-     * @param value исходное значение
-     * @return значение с подстановочными символами
-     */
-    private String applyWildcards(String value) {
-        return switch (likeMatchMode) {
-            case BOTH -> "%" + value + "%";
-            case START_ONLY -> "%" + value;
-            case END_ONLY -> value + "%";
-            case NONE -> value;
+            String valueWithPattern = switch (likeMatchMode) {
+                case BOTH -> "%" + value + "%";
+                case START_ONLY -> "%" + value;
+                case END_ONLY -> value + "%";
+                case NONE -> value;
+            };
+
+            if (ignoreCase) {
+                return cb.like(ExpressionUtils.toLower(cb, path), valueWithPattern.toLowerCase(), '\\');
+            }
+
+            return cb.like(path, valueWithPattern, '\\');
         };
     }
 }

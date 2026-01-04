@@ -10,15 +10,15 @@ import static org.springframework.data.jpa.domain.Specification.where;
  *
  * @param <E> тип сущности
  */
-public class Empty<E> implements CustomSpecification<E> {
+public final class Empty<E> implements CustomSpecification<E> {
 
-  /**
-   * Возвращает пустую спецификацию.
-   *
-   * @return пустая спецификация
-   */
-  @Override
-  public Specification<E> specification() {
-    return where(null);
-  }
+    /**
+     * Возвращает пустую спецификацию.
+     *
+     * @return пустая спецификация
+     */
+    @Override
+    public Specification<E> specification() {
+        return where(null);
+    }
 }

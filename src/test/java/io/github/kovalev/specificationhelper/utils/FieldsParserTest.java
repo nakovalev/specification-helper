@@ -2,45 +2,41 @@ package io.github.kovalev.specificationhelper.utils;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class FieldsParserTest {
-
-    FieldsParser parser = new FieldsParser();
 
     @Test
     void shouldThrowExceptionWhenFieldsIsNull() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> parser.parse(null));
+                () -> new FieldsParser(null).parse());
         assertEquals("fields is null or blank", exception.getMessage());
     }
 
     @Test
     void shouldThrowExceptionWhenFieldsIsEmpty() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> parser.parse(""));
+                () -> new FieldsParser("").parse());
         assertEquals("fields is null or blank", exception.getMessage());
     }
 
     @Test
     void shouldThrowExceptionWhenFieldsIsBlank() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> parser.parse("   "));
+                () -> new FieldsParser("   ").parse());
         assertEquals("fields is null or blank", exception.getMessage());
     }
 
     @Test
     void shouldSplitSingleFieldByDot() {
-        String[] result = parser.parse("order.item.price");
+        String[] result = new FieldsParser("order.item.price").parse();
         assertArrayEquals(new String[]{"order", "item", "price"}, result);
     }
 
 
     @Test
     void shouldNotSplitSingleFieldWithoutDot() {
-        String[] result = parser.parse("status");
+        String[] result = new FieldsParser("status").parse();
         assertArrayEquals(new String[]{"status"}, result);
     }
 }

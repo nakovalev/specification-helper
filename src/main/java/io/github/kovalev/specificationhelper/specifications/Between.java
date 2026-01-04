@@ -22,10 +22,9 @@ import java.util.Objects;
  * @param <E> тип сущности
  * @param <C> тип значения для сравнения
  */
-public class Between<E, C extends Comparable<? super C>>
-        implements CustomSpecification<E> {
+public final class Between<E, C extends Comparable<? super C>> implements CustomSpecification<E> {
 
-    private final transient List<C> values;
+    private final List<C> values;
     private final String fields;
 
     /**
@@ -40,6 +39,17 @@ public class Between<E, C extends Comparable<? super C>>
     }
 
     /**
+     * Конструктор диапазона значений.
+     *
+     * @param fields имена полей сущности, для которых применяется диапазон; не может быть {@code null}
+     * @param from   нижняя граница диапазона (включительно)
+     * @param to     верхняя граница диапазона (включительно)
+     */
+    public Between(@NonNull String fields, C from, C to) {
+        this(fields, List.of(from, to));
+    }
+
+    /**
      * Возвращает спецификацию "BETWEEN" для JPA Criteria API.
      *
      * <p>Если список {@code values} пуст или содержит только {@code null}, возвращается пустая спецификация {@link Empty}.</p>
@@ -48,25 +58,24 @@ public class Between<E, C extends Comparable<? super C>>
      */
     @Override
     public Specification<E> specification() {
-        if (new CheckValue(values).nonNull()) {
-            if (values.size() < 2 && values.stream().allMatch(Objects::isNull)) {
-                return new Empty<>();
-            }
-
-            C from = values.get(0);
-            C to = values.get(1);
-
-            if (from != null && to == null) {
-                return new GreaterThanOrEqualTo<E, C>(fields, from).specification();
-            } else if (from == null && to != null) {
-                return new LessThanOrEqualTo<E, C>(fields, to).specification();
-            }
-
-            return new And<E>(new GreaterThanOrEqualTo<>(fields, from), new LessThanOrEqualTo<>(fields, to))
-                    .specification();
+        if (new CheckValue(values).isNull()) {
+            return new Empty<>();
         }
 
-        return new Empty<>();
+        if (values.size() < 2 && values.stream().allMatch(Objects::isNull)) {
+            return new Empty<>();
+        }
+
+        C from = values.get(0);
+        C to = values.get(1);
+
+        if (from != null && to == null) {
+            return new GreaterThanOrEqualTo<E, C>(fields, from).specification();
+        } else if (from == null && to != null) {
+            return new LessThanOrEqualTo<E, C>(fields, to).specification();
+        }
+
+        return new And<E>(new GreaterThanOrEqualTo<>(fields, from), new LessThanOrEqualTo<>(fields, to)).specification();
     }
 }
 

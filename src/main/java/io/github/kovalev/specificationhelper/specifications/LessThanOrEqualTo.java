@@ -2,7 +2,7 @@ package io.github.kovalev.specificationhelper.specifications;
 
 
 import io.github.kovalev.specificationhelper.utils.CheckValue;
-import io.github.kovalev.specificationhelper.utils.Expressions;
+import io.github.kovalev.specificationhelper.utils.ExpressionUtils;
 import io.github.kovalev.specificationhelper.utils.FieldsParser;
 import io.github.kovalev.specificationhelper.utils.PathCalculator;
 import jakarta.persistence.criteria.Expression;
@@ -24,10 +24,9 @@ import org.springframework.lang.NonNull;
  * @param <E> тип сущности
  * @param <C> тип значения для сравнения
  */
-public class LessThanOrEqualTo<E, C extends Comparable<? super C>>
-        implements CustomSpecification<E> {
+public final class LessThanOrEqualTo<E, C extends Comparable<? super C>> implements CustomSpecification<E> {
 
-    private final transient C value;
+    private final C value;
     private final String[] fields;
 
     /**
@@ -38,7 +37,7 @@ public class LessThanOrEqualTo<E, C extends Comparable<? super C>>
      */
     public LessThanOrEqualTo(@NonNull String fields, C value) {
         this.value = value;
-        this.fields = new FieldsParser().parse(fields);
+        this.fields = new FieldsParser(fields).parse();
     }
 
     /**
@@ -51,14 +50,14 @@ public class LessThanOrEqualTo<E, C extends Comparable<? super C>>
      */
     @Override
     public Specification<E> specification() {
-        if (new CheckValue(value).nonNull()) {
-            return (root, query, cb) -> {
-                val path = new PathCalculator<E, C>(root, fields).path();
-                val expression = (Expression<C>) new Expressions().get(cb, path, value);
-                return cb.lessThanOrEqualTo(expression, value);
-            };
+        if (new CheckValue(value).isNull()) {
+            return new Empty<>();
         }
 
-        return new Empty<>();
+        return (root, query, cb) -> {
+            val path = new PathCalculator<E, C>(root, fields).path();
+            val expression = (Expression<C>) ExpressionUtils.expression(cb, path, value);
+            return cb.lessThanOrEqualTo(expression, value);
+        };
     }
 }

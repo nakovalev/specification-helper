@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Спецификация "NOT" для инверсии условия вложенной спецификации.
@@ -24,7 +23,7 @@ import java.util.Objects;
  *
  * @param <E> тип сущности
  */
-public class Not<E> implements CustomSpecification<E> {
+public final class Not<E> implements CustomSpecification<E> {
 
     private final List<Specification<E>> specifications = new ArrayList<>();
     private final CompositionMode mode;
@@ -66,7 +65,7 @@ public class Not<E> implements CustomSpecification<E> {
      * @param specifications спецификации
      */
     public Not(@NonNull CompositionMode mode, @NonNull Collection<Specification<E>> specifications) {
-        this.mode = Objects.requireNonNull(mode);
+        this.mode = mode;
         this.specifications.addAll(specifications);
     }
 

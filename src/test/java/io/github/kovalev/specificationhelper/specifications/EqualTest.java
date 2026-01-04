@@ -23,7 +23,7 @@ class EqualTest extends DatabaseTest {
         assertThat(userRepository.findOne(new Equal<>(User_.USERNAME, user.getUsername()))).isPresent();
         assertThat(userRepository.findOne(new Equal<>(User_.EMAIL, user.getEmail()))).isPresent();
 
-        assertThat(userRepository.findOne(new Equal<>(User_.USERNAME,"nonexistent"))).isEmpty();
+        assertThat(userRepository.findOne(new Equal<>(User_.USERNAME, "nonexistent"))).isEmpty();
     }
 
     @Test

@@ -2,7 +2,7 @@ package io.github.kovalev.specificationhelper.specifications;
 
 
 import io.github.kovalev.specificationhelper.enums.NullHandling;
-import io.github.kovalev.specificationhelper.utils.Expressions;
+import io.github.kovalev.specificationhelper.utils.ExpressionUtils;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Path;
@@ -12,7 +12,7 @@ import org.springframework.lang.NonNull;
 /**
  * Спецификация для проверки равенства значений полей.
  *
- * <p>Наследует все особенности сравнения из {@link BaseComparisonSpecification},
+ * <p>Наследует все особенности сравнения из {@link BaseEqual},
  * включая ограничения точности для временных типов.</p>
  *
  * <p><b>Особенности реализации:</b></p>
@@ -24,7 +24,7 @@ import org.springframework.lang.NonNull;
  *
  * @param <E> тип сущности
  */
-public class Equal<E> extends BaseComparisonSpecification<E> {
+public final class Equal<E> extends BaseEqual<E> {
 
     public Equal(@NonNull String fields, Object value) {
         super(fields, value, NullHandling.IGNORE, DEFAULT_IGNORE_CASE);
@@ -48,9 +48,9 @@ public class Equal<E> extends BaseComparisonSpecification<E> {
     }
 
     @Override
-    protected Predicate resolveCase(CriteriaBuilder cb, Path<Object> path, Expressions expressions, String str) {
+    protected Predicate resolveCase(CriteriaBuilder cb, Path<Object> path, String str) {
         return ignoreCase
-                ? cb.equal(expressions.toLower(cb, path), str.toLowerCase())
+                ? cb.equal(ExpressionUtils.toLower(cb, path), str.toLowerCase())
                 : cb.equal(path, str);
     }
 

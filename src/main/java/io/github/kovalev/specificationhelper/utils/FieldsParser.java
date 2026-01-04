@@ -1,8 +1,13 @@
 package io.github.kovalev.specificationhelper.utils;
 
-public class FieldsParser {
+import lombok.RequiredArgsConstructor;
 
-    public String[] parse(String fields) {
+@RequiredArgsConstructor
+public final class FieldsParser {
+
+    private final String fields;
+
+    public String[] parse() {
         if (fields == null || fields.isBlank()) {
             throw new IllegalArgumentException("fields is null or blank");
         }

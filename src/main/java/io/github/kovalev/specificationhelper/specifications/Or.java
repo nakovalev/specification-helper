@@ -21,7 +21,7 @@ import java.util.List;
  *
  * @param <E> тип сущности
  */
-public class Or<E> implements CustomSpecification<E> {
+public final class Or<E> implements CustomSpecification<E> {
 
     private final List<Specification<E>> specifications = new ArrayList<>();
 

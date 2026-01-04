@@ -23,6 +23,39 @@ class CheckValueTest {
         assertThat(new CheckValue(withNullValueList()).nonNull()).isTrue();
     }
 
+    @Test
+    void isNull() {
+        assertThat(new CheckValue(null).isNull()).isTrue();
+        assertThat(new CheckValue(Integer.MAX_VALUE).isNull()).isFalse();
+
+        assertThat(new CheckValue("").isNull()).isTrue();
+        assertThat(new CheckValue("any").isNull()).isFalse();
+
+        assertThat(new CheckValue(List.of()).isNull()).isTrue();
+        assertThat(new CheckValue(List.of(Integer.MAX_VALUE)).isNull()).isFalse();
+        assertThat(new CheckValue(onlyNullValuesList()).isNull()).isTrue();
+        assertThat(new CheckValue(withNullValueList()).isNull()).isFalse();
+    }
+
+    @Test
+    void isNull_isInverseOf_nonNull() {
+        Object[] values = {
+                null,
+                Integer.MAX_VALUE,
+                "",
+                "any",
+                List.of(),
+                List.of(Integer.MAX_VALUE),
+                onlyNullValuesList(),
+                withNullValueList()
+        };
+
+        for (Object value : values) {
+            CheckValue checkValue = new CheckValue(value);
+            assertThat(checkValue.isNull()).isEqualTo(!checkValue.nonNull());
+        }
+    }
+
     List<Integer> withNullValueList() {
         return new ArrayList<>() {{
             add(null);
