@@ -45,6 +45,7 @@
         <postgresql.version>42.7.4</postgresql.version>
         <junit.jupiter.version>5.11.3</junit.jupiter.version>
         <maven.surefire.version>3.2.5</maven.surefire.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
@@ -187,6 +188,10 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <source>17</source>
+                </configuration>
             </plugin>
 
             <plugin>
